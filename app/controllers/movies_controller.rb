@@ -18,25 +18,25 @@ class MoviesController < ApplicationController
         @release_date_class="hilite"
       end
       
-      @all_ratings=Movie.sort_ratings
+      # @all_ratings=Movie.sort_ratings
     
-      if params[:ratings]
-        @show_ratings = params[:ratings].keys
-        session[:rating] = @show_ratings
-      elsif session[:rating]
-        query = Hash.new
-        session[:rating].each do |rating|
-          query['ratings['+ rating + ']'] = 1
-        end
-        query['sort'] = params[:sort] if params[:sort]
-        session[:rating] = nil
-        flash.keep
-        redirect_to movies_path(query)
-      else
-        @show_ratings = @all_ratings
-      end
+      # if params[:ratings]
+      #   @show_ratings = params[:ratings].keys
+      #   session[:rating] = @show_ratings
+      # elsif session[:rating]
+      #   query = Hash.new
+      #   session[:rating].each do |rating|
+      #     query['ratings['+ rating + ']'] = 1
+      #   end
+      #   query['sort'] = params[:sort] if params[:sort]
+      #   session[:rating] = nil
+      #   flash.keep
+      #   redirect_to movies_path(query)
+      # else
+      #   @show_ratings = @all_ratings
+      # end
 
-    @movies.where!(rating: @show_ratings)
+      # @movies.where!(rating: @show_ratings)
     end
   
     def new
