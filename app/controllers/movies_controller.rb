@@ -6,39 +6,17 @@ class MoviesController < ApplicationController
       # will render app/views/movies/show.<extension> by default
     end
     
-    def movie_params
-      params.require(:movie).permit(:title, :rating, :description, :release_date)
-    end
-  
     def index
-      @movies = Movie.all
-      if params[:sort] == "title"
-        @movies.order!("title asc")
-        @movie_title_class="hilite"
-      elsif params[:sort] == "release_date"
-        @movies.order!("release_date asc")
-        @release_date_class="hilite"
-      end
-    
-      @all_ratings=Movie.sort_ratings
-    
-      if params[:ratings]
-        @show_ratings = params[:ratings].keys
-        session[:rating] = @show_ratings
-      elsif session[:rating]
-        query = Hash.new
-        session[:rating].each do |rating|
-          query['ratings['+ rating + ']'] = 1
-        end
-        query['sort'] = params[:sort] if params[:sort]
-        session[:rating] = nil
+      @sort = params[:sort]||session[:sort]
+      @all_ratings = Movie.ratings
+      @ratings =  params[:ratings] || session[:ratings] || Hash[@all_ratings.map {|rating| [rating, rating]}]
+      @movies = Movie.where(rating:@ratings.keys).order(@sort)
+      if params[:sort]!=session[:sort] or params[:ratings]!=session[:ratings]
+        session[:sort] = @sort
+        session[:ratings] = @ratings
         flash.keep
-        redirect_to movies_path(query)
-      else
-        @show_ratings = @all_ratings
+        redirect_to movies_path(sort: session[:sort],ratings:session[:ratings])
       end
-
-      @movies.where!(rating: @show_ratings)
     end
   
     def new
